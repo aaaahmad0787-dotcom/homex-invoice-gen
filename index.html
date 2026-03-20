@@ -4,152 +4,159 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Homex Digital – Bill Generator</title>
-
-<!-- jsPDF + html2canvas for PDF download -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <style>
-/* =========================================
-   APP UI STYLES
-   ========================================= */
 * { box-sizing: border-box; }
 body { font-family: Arial, sans-serif; background: #e8eaf0; margin: 0; padding: 20px; }
 .app-wrap { max-width: 1050px; margin: 0 auto; }
-.app-title { font-size: 18px; font-weight: bold; color: #1a237e; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-
-.form-card { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 14px 16px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
-.form-card h3 { margin: 0 0 10px; font-size: 11px; color: #666; text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 6px; letter-spacing: 1.2px; }
+.app-title { font-size: 17px; font-weight: bold; color: #1a237e; margin-bottom: 14px; }
+.form-card { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.form-card h3 { margin: 0 0 10px; font-size: 11px; color: #777; text-transform: uppercase; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; letter-spacing: 1px; }
 .form-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 6px; }
 .fg { display: flex; flex-direction: column; }
 .fg label { font-size: 11px; color: #555; margin-bottom: 3px; }
 .fg input, .fg textarea { border: 1px solid #ccc; border-radius: 3px; padding: 5px 8px; font-size: 12px; font-family: Arial; outline: none; }
-.fg input:focus, .fg textarea:focus { border-color: #3f51b5; box-shadow: 0 0 0 2px rgba(63,81,181,0.1); }
+.fg input:focus, .fg textarea:focus { border-color: #3f51b5; }
 .fg textarea { resize: vertical; min-height: 52px; }
-
-/* Items form */
-.items-head { display: grid; grid-template-columns: 26px 1fr 72px 65px 85px 65px 30px; gap: 5px; padding: 5px 8px; background: #f5f5f5; border: 1px solid #ccc; border-radius: 3px 3px 0 0; font-size: 10.5px; font-weight: bold; color: #444; }
-.iform-row { display: grid; grid-template-columns: 26px 1fr 72px 65px 85px 65px 30px; gap: 5px; align-items: center; padding: 5px 8px; border: 1px solid #ddd; border-top: none; background: #fff; }
-.iform-row:last-child { border-radius: 0 0 3px 3px; }
-.iform-row input { border: 1px solid #ccc; border-radius: 3px; padding: 4px 6px; font-size: 12px; width: 100%; font-family: Arial; outline: none; }
-.iform-row input:focus { border-color: #3f51b5; }
-.inum { font-size: 11px; color: #999; text-align: center; padding-top: 2px; }
+.ihead { display: grid; grid-template-columns: 26px 1fr 75px 65px 90px 65px 28px; gap: 5px; padding: 5px 8px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 3px 3px 0 0; font-size: 11px; font-weight: bold; color: #444; }
+.irow-f { display: grid; grid-template-columns: 26px 1fr 75px 65px 90px 65px 28px; gap: 5px; align-items: center; padding: 5px 8px; border: 1px solid #ddd; border-top: none; background: #fff; }
+.irow-f input { border: 1px solid #ccc; border-radius: 3px; padding: 4px 6px; font-size: 12px; width: 100%; font-family: Arial; outline: none; }
+.irow-f input:focus { border-color: #3f51b5; }
+.inum { font-size: 11px; color: #999; text-align: center; }
 .delbtn { background: #e53935; color: #fff; border: none; border-radius: 3px; cursor: pointer; font-size: 13px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; margin: auto; }
 .delbtn:hover { background: #b71c1c; }
-
 .addbtn { margin-top: 8px; padding: 6px 14px; background: #fff; color: #3f51b5; border: 1.5px solid #3f51b5; border-radius: 3px; font-size: 12px; cursor: pointer; font-weight: bold; }
 .addbtn:hover { background: #e8eaf6; }
-
-.action-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
-.btn-gen  { padding: 10px 24px; background: #2e7d32; color: #fff; border: none; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; }
+.action-row { display: flex; gap: 10px; margin-top: 14px; }
+.btn-gen { padding: 10px 24px; background: #2e7d32; color: #fff; border: none; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; }
 .btn-gen:hover { background: #1b5e20; }
-.btn-pdf  { padding: 10px 20px; background: #c62828; color: #fff; border: none; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; display: none; }
+.btn-pdf { padding: 10px 20px; background: #c62828; color: #fff; border: none; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; display: none; }
 .btn-pdf:hover { background: #8d0000; }
-.btn-prn  { padding: 10px 20px; background: #1565c0; color: #fff; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; display: none; }
+.btn-prn { padding: 10px 20px; background: #1565c0; color: #fff; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; display: none; }
 .btn-prn:hover { background: #0d47a1; }
 
-/* =========================================
-   INVOICE PREVIEW WRAPPER
-   ========================================= */
+/* ===== INVOICE PREVIEW ===== */
 #inv-wrap { display: none; margin-top: 20px; }
-.inv-preview-label { font-size: 11px; color: #888; margin-bottom: 6px; font-style: italic; }
-
-/* A4 container — fixed 794px wide (A4 @96dpi) */
+.prev-label { font-size: 11px; color: #999; margin-bottom: 6px; font-style: italic; }
 #inv {
   width: 794px;
-  min-height: 1123px;
   background: #fff;
   margin: 0 auto;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-  padding: 20px 22px;
-  position: relative;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+  padding: 14px 16px;
 }
 
-/* =========================================
-   INVOICE INNER STYLES
-   ========================================= */
-.ibox { border: 1px solid #000; font-family: Arial, sans-serif; font-size: 11.5px; color: #000; width: 100%; }
+/* ===== INVOICE STYLES ===== */
+.ibox {
+  border: 1.5px solid #000;
+  font-family: Arial, sans-serif;
+  color: #000;
+  width: 100%;
+}
 
-/* Header */
-.ih { display: grid; grid-template-columns: 1fr 185px; border-bottom: 1px solid #000; }
-.ihc { padding: 6px 8px; }
-.ihc-name { font-size: 13.5px; font-weight: bold; }
-.ihc-addr { font-size: 10px; margin-top: 3px; line-height: 1.6; }
-.ihm { border-left: 1px solid #000; padding: 6px 10px; font-size: 10.5px; display: flex; flex-direction: column; gap: 4px; justify-content: center; }
-.ihm b { display: inline-block; min-width: 68px; }
+/* Row 1: TAX INVOICE big center | Invoice No+Date right */
+.i-topbar {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  border-bottom: 1.5px solid #000;
+  background: #f5f5f5;
+}
+.i-topbar-title {
+  padding: 8px 12px;
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: underline;
+  letter-spacing: 3px;
+  display: flex;
+  align-items: center;
+}
+.i-topbar-meta {
+  border-left: 1.5px solid #000;
+  padding: 8px 12px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+  background: #f8f8f8;
+}
+.i-topbar-meta div { display: flex; }
+.i-topbar-meta b { min-width: 72px; display: inline-block; }
 
-/* Title */
-.ititle { text-align: center; border-bottom: 1px solid #000; padding: 4px; font-size: 12.5px; font-weight: bold; text-decoration: underline; letter-spacing: 1px; }
+/* Row 2: Company details full width */
+.i-company {
+  border-bottom: 1.5px solid #000;
+  padding: 7px 12px;
+  font-size: 10.5px;
+  line-height: 1.75;
+  background: #fff;
+}
+.i-company-name {
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
 
 /* Info rows */
-.irow2 { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #000; }
-.irow1 { display: grid; grid-template-columns: 1fr; border-bottom: 1px solid #000; }
-.ic { padding: 2.5px 7px; font-size: 10px; min-height: 18px; }
-.irow2 .ic:first-child { border-right: 1px solid #000; }
-.iclabel { font-weight: bold; }
+.ir2 { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #777; }
+.ir1 { display: grid; grid-template-columns: 1fr; border-bottom: 1px solid #777; }
+.ic { padding: 3px 10px; font-size: 10px; min-height: 17px; display: flex; align-items: center; }
+.ir2 .ic:first-child { border-right: 1px solid #777; }
+.icl { font-weight: bold; }
 
 /* Parties */
-.iparties { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #000; }
-.iparty { padding: 5px 8px; font-size: 10.5px; line-height: 1.6; }
-.iparty:first-child { border-right: 1px solid #000; }
-.iparty-title { font-weight: bold; font-size: 10.5px; border-bottom: 1px solid #ccc; margin-bottom: 3px; }
+.iparties { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1.5px solid #000; }
+.iparty { padding: 7px 12px; font-size: 10.5px; line-height: 1.75; }
+.iparty:first-child { border-right: 1.5px solid #000; }
+.iparty-title { font-weight: bold; font-size: 10.5px; background: #f0f0f0; padding: 2px 6px; margin: -2px -6px 5px; border-bottom: 1px solid #ccc; }
 
 /* Items table */
-.itable { width: 100%; border-collapse: collapse; border-bottom: 1px solid #000; }
-.itable th { border: 1px solid #000; padding: 4px 4px; font-size: 10.5px; text-align: center; font-weight: bold; line-height: 1.3; }
-.itable td { border: 1px solid #000; padding: 3px 4px; font-size: 11px; }
+.itable-wrap { border-bottom: 1.5px solid #000; }
+.itable { width: 100%; border-collapse: collapse; }
+.itable th { border: 1px solid #555; padding: 6px 5px; font-size: 10.5px; text-align: center; font-weight: bold; line-height: 1.4; background: #efefef; }
+.itable td { border: 1px solid #888; padding: 5px 6px; font-size: 11px; }
 .tc { text-align: center; }
 .tr { text-align: right; }
-.tb { font-weight: bold; }
+.gst-row td { background: #fafafa; font-size: 11px; border-color: #bbb; }
+.total-row td { background: #efefef; font-weight: bold; font-size: 12.5px; border-top: 1.5px solid #000; }
 
 /* Words */
-.iwords { border-bottom: 1px solid #000; padding: 4px 8px; font-size: 10.5px; }
+.iwords { border-bottom: 1px solid #777; padding: 5px 12px; font-size: 10.5px; }
 
-/* Bottom: tax + totals */
-.ibottom { display: grid; grid-template-columns: 1fr 195px; border-bottom: 1px solid #000; }
-.itaxsec { border-right: 1px solid #000; }
-.itaxtitle { padding: 3px 7px; font-size: 10.5px; font-weight: bold; border-bottom: 1px solid #000; }
+/* Tax section */
+.ibottom { display: grid; grid-template-columns: 1fr 205px; border-bottom: 1.5px solid #000; }
+.itaxsec { border-right: 1.5px solid #000; }
+.itaxtitle { padding: 4px 10px; font-size: 10.5px; font-weight: bold; border-bottom: 1px solid #777; background: #f0f0f0; }
 .itaxtbl { width: 100%; border-collapse: collapse; }
-.itaxtbl th, .itaxtbl td { border: 1px solid #000; padding: 3px 4px; font-size: 10px; text-align: right; }
-.itaxtbl th { text-align: center; }
-.itaxtbl .tc { text-align: center; }
-.itotsec { padding: 5px 10px; font-size: 10.5px; display: flex; flex-direction: column; gap: 3px; justify-content: center; }
-.itotrow { display: flex; justify-content: space-between; gap: 10px; }
-.itotfinal { font-weight: bold; font-size: 12px; border-top: 1px solid #000; margin-top: 3px; padding-top: 3px; }
+.itaxtbl th { border: 1px solid #777; padding: 4px 5px; font-size: 10px; text-align: center; background: #f8f8f8; }
+.itaxtbl td { border: 1px solid #aaa; padding: 4px 6px; font-size: 10.5px; text-align: right; }
+.itaxtbl tr:last-child td { font-weight: bold; background: #efefef; border-top: 1.5px solid #000; }
+.itotsec { padding: 10px 14px; font-size: 11px; display: flex; flex-direction: column; gap: 7px; justify-content: center; background: #fafafa; }
+.itotrow { display: flex; justify-content: space-between; gap: 8px; }
+.itotfinal { font-weight: bold; font-size: 13.5px; border-top: 1.5px solid #000; margin-top: 3px; padding-top: 6px; }
 
 /* Tax words */
-.itaxwords { border-bottom: 1px solid #000; padding: 4px 8px; font-size: 10.5px; }
+.itaxwords { border-bottom: 1.5px solid #000; padding: 5px 12px; font-size: 10.5px; }
 
 /* Footer */
-.ifooter { display: grid; grid-template-columns: 1fr 1fr; min-height: 75px; }
-.idecl { padding: 6px 8px; font-size: 10.5px; border-right: 1px solid #000; line-height: 1.6; }
-.isign { padding: 6px 8px; font-size: 10.5px; text-align: right; display: flex; flex-direction: column; justify-content: space-between; }
+.ifooter { display: grid; grid-template-columns: 1fr 1fr; }
+.idecl { padding: 8px 12px; font-size: 10px; border-right: 1.5px solid #000; line-height: 1.75; color: #333; }
+.isign { padding: 8px 12px; font-size: 10.5px; text-align: right; display: flex; flex-direction: column; justify-content: space-between; min-height: 75px; }
 
-/* =========================================
-   PRINT MEDIA — A4 exact fit
-   ========================================= */
 @media print {
-  @page { size: A4 portrait; margin: 10mm; }
-  body { background: white; padding: 0; margin: 0; }
-  .form-card, .app-title, .action-row, .inv-preview-label { display: none !important; }
+  @page { size: A4 portrait; margin: 7mm; }
+  body { background: #fff; padding: 0; margin: 0; }
+  .form-card, .app-title, .action-row, .prev-label { display: none !important; }
   #inv-wrap { display: block !important; margin: 0; }
-  #inv {
-    width: 100% !important;
-    min-height: unset !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  .ibox { border: 1px solid #000; }
+  #inv { width: 100% !important; min-height: 100vh !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
 }
 </style>
 </head>
 <body>
 <div class="app-wrap">
-
   <div class="app-title">🧾 Homex Digital — Tax Invoice Generator</div>
 
-  <!-- Invoice Info -->
   <div class="form-card">
     <h3>Invoice Info</h3>
     <div class="form-row">
@@ -158,36 +165,27 @@ body { font-family: Arial, sans-serif; background: #e8eaf0; margin: 0; padding: 
     </div>
   </div>
 
-  <!-- Buyer -->
   <div class="form-card">
     <h3>Buyer / Consignee Details</h3>
     <div class="form-row">
-      <div class="fg" style="flex:1 1 200px"><label>Buyer Name</label><input id="bname" placeholder="e.g. AVINASH YADAV"></div>
-      <div class="fg" style="flex:2 1 300px"><label>Address</label><textarea id="baddr" placeholder="2/148 Vishwas Khand Gomtinagar, Lucknow"></textarea></div>
+      <div class="fg" style="flex:1 1 180px"><label>Buyer Name</label><input id="bname" placeholder="e.g. AVINASH YADAV"></div>
+      <div class="fg" style="flex:2 1 280px"><label>Address</label><textarea id="baddr" placeholder="2/148 Vishwas Khand Gomtinagar, Lucknow"></textarea></div>
     </div>
     <div class="form-row">
-      <div class="fg"><label>State</label><input id="bstate" style="width:160px" value="Uttar Pradesh"></div>
-      <div class="fg"><label>State Code</label><input id="bcode" style="width:60px" value="09"></div>
-      <div class="fg"><label>GSTIN (optional)</label><input id="bgst" style="width:190px" placeholder="Leave blank if none"></div>
-      <div class="fg"><label>Email (optional)</label><input id="bemail" style="width:190px"></div>
+      <div class="fg"><label>State</label><input id="bstate" style="width:155px" value="Uttar Pradesh"></div>
+      <div class="fg"><label>Code</label><input id="bcode" style="width:55px" value="09"></div>
+      <div class="fg"><label>GSTIN (optional)</label><input id="bgst" style="width:185px" placeholder="Leave blank if none"></div>
+      <div class="fg"><label>Email (optional)</label><input id="bemail" style="width:185px"></div>
     </div>
   </div>
 
-  <!-- Items -->
   <div class="form-card">
     <h3>Items</h3>
-    <div class="items-head">
-      <div>#</div>
-      <div>Description</div>
-      <div>HSN/SAC</div>
-      <div>Qty (PC)</div>
-      <div>MRP/PC (₹)</div>
-      <div>Disc %</div>
-      <div></div>
+    <div class="ihead">
+      <div>#</div><div>Description</div><div>HSN/SAC</div><div>Qty (PC)</div><div>MRP/PC (₹)</div><div>Disc %</div><div></div>
     </div>
     <div id="iwrap"></div>
     <button class="addbtn" onclick="addItem()">+ Add Item</button>
-
     <div class="action-row">
       <button class="btn-gen" onclick="generate()">✔ Generate Invoice</button>
       <button class="btn-pdf" id="btnPdf" onclick="downloadPDF()">⬇ Download PDF</button>
@@ -195,33 +193,26 @@ body { font-family: Arial, sans-serif; background: #e8eaf0; margin: 0; padding: 
     </div>
   </div>
 
-  <!-- Invoice Preview -->
   <div id="inv-wrap">
-    <div class="inv-preview-label">Preview — exactly as it will print on A4</div>
-    <div id="inv">
-      <!-- filled by JS -->
-    </div>
+    <div class="prev-label">Preview (A4 size)</div>
+    <div id="inv"></div>
   </div>
-
-</div><!-- end app-wrap -->
+</div>
 
 <script>
-/* ===================== ITEMS FORM ===================== */
 let uid = 0, ids = [];
 
 function addItem(d='', h='', q=1, m='', dc='') {
-  uid++;
-  ids.push(uid);
+  uid++; ids.push(uid);
   const id = uid;
   const row = document.createElement('div');
-  row.className = 'iform-row';
-  row.id = 'ir' + id;
+  row.className = 'irow-f'; row.id = 'ir'+id;
   row.innerHTML = `
     <div class="inum" id="in${id}">${ids.length}</div>
-    <input id="d${id}"  value="${d}"  placeholder="Item name">
-    <input id="h${id}"  value="${h}"  placeholder="8301">
-    <input id="q${id}"  type="number" value="${q}"  min="1">
-    <input id="m${id}"  type="number" value="${m}"  placeholder="3999">
+    <input id="d${id}" value="${d}" placeholder="Item name">
+    <input id="h${id}" value="${h}" placeholder="8301">
+    <input id="q${id}" type="number" value="${q}" min="1">
+    <input id="m${id}" type="number" value="${m}" placeholder="3999">
     <input id="dc${id}" type="number" value="${dc}" placeholder="45">
     <button class="delbtn" onclick="delItem(${id})">✕</button>`;
   document.getElementById('iwrap').appendChild(row);
@@ -229,69 +220,50 @@ function addItem(d='', h='', q=1, m='', dc='') {
 
 function delItem(id) {
   ids = ids.filter(x => x !== id);
-  document.getElementById('ir' + id).remove();
-  ids.forEach((x, i) => document.getElementById('in' + x).textContent = i + 1);
+  document.getElementById('ir'+id).remove();
+  ids.forEach((x,i) => document.getElementById('in'+x).textContent = i+1);
 }
 
 function getItems() {
   return ids.map(id => ({
-    d:  document.getElementById('d'  + id).value.trim(),
-    h:  document.getElementById('h'  + id).value.trim(),
-    q:  +document.getElementById('q'  + id).value || 0,
-    m:  +document.getElementById('m'  + id).value || 0,
-    dc: +document.getElementById('dc' + id).value || 0,
+    d:  document.getElementById('d'+id).value.trim(),
+    h:  document.getElementById('h'+id).value.trim(),
+    q:  +document.getElementById('q'+id).value || 0,
+    m:  +document.getElementById('m'+id).value || 0,
+    dc: +document.getElementById('dc'+id).value || 0,
   })).filter(x => x.d);
 }
 
-/* ===================== NUMBER TO WORDS ===================== */
 function n2w(n) {
-  const O = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine',
-    'Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
-  const T = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
-  function u(n) {
-    if (!n) return '';
-    if (n < 20) return O[n];
-    if (n < 100) return T[~~(n/10)] + (n%10 ? ' '+O[n%10] : '');
-    return O[~~(n/100)] + ' Hundred' + (n%100 ? ' '+u(n%100) : '');
-  }
-  function c(n) {
-    let r = '';
-    if (n >= 10000000) { r += u(~~(n/10000000)) + ' Crore '; n %= 10000000; }
-    if (n >= 100000)   { r += u(~~(n/100000))   + ' Lakh ';  n %= 100000;   }
-    if (n >= 1000)     { r += u(~~(n/1000))     + ' Thousand '; n %= 1000;  }
-    if (n) r += u(n);
-    return r.trim();
-  }
-  const rs = ~~n, ps = Math.round((n - rs) * 100);
-  return 'INR ' + c(rs) + (ps ? ' and ' + c(ps) + ' Paise' : '') + ' Only';
+  const O=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+  const T=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+  function u(n){if(!n)return '';if(n<20)return O[n];if(n<100)return T[~~(n/10)]+(n%10?' '+O[n%10]:'');return O[~~(n/100)]+' Hundred'+(n%100?' '+u(n%100):'');}
+  function c(n){let r='';if(n>=10000000){r+=u(~~(n/10000000))+' Crore ';n%=10000000;}if(n>=100000){r+=u(~~(n/100000))+' Lakh ';n%=100000;}if(n>=1000){r+=u(~~(n/1000))+' Thousand ';n%=1000;}if(n)r+=u(n);return r.trim();}
+  const rs=~~n, ps=Math.round((n-rs)*100);
+  return 'INR '+c(rs)+(ps?' and '+c(ps)+' Paise':'')+' Only';
 }
 
-function f(n) { return n.toFixed(2); }
+function f(n){ return n.toFixed(2); }
 
-/* ===================== GENERATE ===================== */
 function generate() {
   const items = getItems();
   if (!items.length) { alert('Koi item daalo pehle!'); return; }
 
-  const invNo  = document.getElementById('invNo').value;
-  const invDate= document.getElementById('invDate').value;
-  const bname  = document.getElementById('bname').value.trim();
-  const baddr  = document.getElementById('baddr').value.trim();
-  const bstate = document.getElementById('bstate').value.trim();
-  const bcode  = document.getElementById('bcode').value.trim();
-  const bgst   = document.getElementById('bgst').value.trim();
-  const bemail = document.getElementById('bemail').value.trim();
-
-  const dStr = invDate
-    ? new Date(invDate+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})
-    : '';
+  const invNo   = document.getElementById('invNo').value;
+  const invDate = document.getElementById('invDate').value;
+  const bname   = document.getElementById('bname').value.trim();
+  const baddr   = document.getElementById('baddr').value.trim();
+  const bstate  = document.getElementById('bstate').value.trim();
+  const bcode   = document.getElementById('bcode').value.trim();
+  const bgst    = document.getElementById('bgst').value.trim();
+  const bemail  = document.getElementById('bemail').value.trim();
+  const dStr    = invDate ? new Date(invDate+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '';
 
   let totTax=0, totCGST=0, totSGST=0, trows='';
 
-  items.forEach((it, i) => {
-    const tax  = it.m * it.q * (1 - it.dc/100);
-    const cgst = tax * 0.09, sgst = tax * 0.09;
-    totTax += tax; totCGST += cgst; totSGST += sgst;
+  items.forEach((it,i) => {
+    const tax=it.m*it.q*(1-it.dc/100), cgst=tax*0.09, sgst=tax*0.09;
+    totTax+=tax; totCGST+=cgst; totSGST+=sgst;
     trows += `<tr>
       <td class="tc">${i+1}</td>
       <td>${it.d}</td>
@@ -305,46 +277,40 @@ function generate() {
     </tr>`;
   });
 
-  // spacer
-  trows += `<tr><td style="height:14px">&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
-
-  const grandRaw = totTax + totCGST + totSGST;
+  const grandRaw = totTax+totCGST+totSGST;
   const grandRnd = Math.round(grandRaw);
   const roff     = grandRnd - grandRaw;
 
-  trows += `
-    <tr><td colspan="8" class="tr">CGST</td><td class="tr">${f(totCGST)}</td></tr>
-    <tr><td colspan="8" class="tr">SGST</td><td class="tr">${f(totSGST)}</td></tr>`;
-  if (Math.abs(roff) >= 0.005)
-    trows += `<tr><td colspan="8" class="tr">Round Off</td><td class="tr">${roff>0?'+':''}${f(roff)}</td></tr>`;
-  trows += `<tr><td colspan="8" class="tr tb">Total</td><td class="tr tb">₹${f(grandRnd)}</td></tr>`;
+  trows += `<tr class="gst-row"><td colspan="8" class="tr">CGST</td><td class="tr">${f(totCGST)}</td></tr>`;
+  trows += `<tr class="gst-row"><td colspan="8" class="tr">SGST</td><td class="tr">${f(totSGST)}</td></tr>`;
+  if (Math.abs(roff)>=0.005)
+    trows += `<tr class="gst-row"><td colspan="8" class="tr">Round Off</td><td class="tr">${roff>0?'+':''}${f(roff)}</td></tr>`;
+  trows += `<tr class="total-row"><td colspan="8" class="tr">Total</td><td class="tr">₹${f(grandRnd)}</td></tr>`;
 
   document.getElementById('inv').innerHTML = `
   <div class="ibox">
 
-    <div class="ih">
-      <div class="ihc">
-        <div class="ihc-name">HOMEX DIGITAL SERVICES</div>
-        <div class="ihc-addr">
-          202B DREAM GREEN CITY PHASE III, GOSAIGANJ LUCKNOW, UTTAR PRADESH 226501<br>
-          GSTIN/UIN: 09HIEPB3034E1ZO &nbsp;&nbsp; State Name : Uttar Pradesh : 09<br>
-          E-Mail : customercare@homexdigital.com
-        </div>
-      </div>
-      <div class="ihm">
-        <div><b>Invoice No.</b> ${invNo}</div>
-        <div><b>Dated</b> ${dStr}</div>
+    <div class="i-topbar">
+      <div class="i-topbar-title">TAX INVOICE</div>
+      <div class="i-topbar-meta">
+        <div><b>Invoice No.</b>${invNo}</div>
+        <div><b>Dated</b>${dStr}</div>
       </div>
     </div>
 
-    <div class="ititle">TAX INVOICE</div>
+    <div class="i-company">
+      <div class="i-company-name">HOMEX DIGITAL SERVICES</div>
+      202B DREAM GREEN CITY PHASE III, GOSAIGANJ LUCKNOW, UTTAR PRADESH 226501 &nbsp;|&nbsp;
+      GSTIN/UIN: 09HIEPB3034E1ZO &nbsp;|&nbsp; State Name : Uttar Pradesh : 09 &nbsp;|&nbsp;
+      E-Mail : customercare@homexdigital.com
+    </div>
 
-    <div class="irow2"><div class="ic"><span class="iclabel">Delivery Note</span></div><div class="ic"><span class="iclabel">Mode/Terms of Payment</span></div></div>
-    <div class="irow2"><div class="ic"><span class="iclabel">Reference No. &amp; Date.</span></div><div class="ic"><span class="iclabel">Other References</span></div></div>
-    <div class="irow2"><div class="ic"><span class="iclabel">Buyer's Order No.</span></div><div class="ic"><span class="iclabel">Dated</span></div></div>
-    <div class="irow2"><div class="ic"><span class="iclabel">Dispatch Doc No.</span></div><div class="ic"><span class="iclabel">Delivery Note Date</span></div></div>
-    <div class="irow2"><div class="ic"><span class="iclabel">Dispatched through</span></div><div class="ic"><span class="iclabel">Destination</span></div></div>
-    <div class="irow1"><div class="ic"><span class="iclabel">Terms of Delivery</span></div></div>
+    <div class="ir2"><div class="ic"><span class="icl">Delivery Note</span></div><div class="ic"><span class="icl">Mode/Terms of Payment</span></div></div>
+    <div class="ir2"><div class="ic"><span class="icl">Reference No. &amp; Date.</span></div><div class="ic"><span class="icl">Other References</span></div></div>
+    <div class="ir2"><div class="ic"><span class="icl">Buyer's Order No.</span></div><div class="ic"><span class="icl">Dated</span></div></div>
+    <div class="ir2"><div class="ic"><span class="icl">Dispatch Doc No.</span></div><div class="ic"><span class="icl">Delivery Note Date</span></div></div>
+    <div class="ir2"><div class="ic"><span class="icl">Dispatched through</span></div><div class="ic"><span class="icl">Destination</span></div></div>
+    <div class="ir1"><div class="ic"><span class="icl">Terms of Delivery</span></div></div>
 
     <div class="iparties">
       <div class="iparty">
@@ -363,22 +329,24 @@ function generate() {
       </div>
     </div>
 
-    <table class="itable">
-      <thead>
-        <tr>
-          <th style="width:26px">Sr<br>No.</th>
-          <th>Description of Goods</th>
-          <th style="width:52px">HSN/<br>SAC</th>
-          <th style="width:44px">GST<br>Rate</th>
-          <th style="width:58px">Quantity</th>
-          <th style="width:58px">Rate</th>
-          <th style="width:26px">per</th>
-          <th style="width:46px">Disc. %</th>
-          <th style="width:72px">Amount</th>
-        </tr>
-      </thead>
-      <tbody>${trows}</tbody>
-    </table>
+    <div class="itable-wrap">
+      <table class="itable">
+        <thead>
+          <tr>
+            <th style="width:30px">Sr<br>No.</th>
+            <th>Description of Goods</th>
+            <th style="width:58px">HSN/<br>SAC</th>
+            <th style="width:50px">GST<br>Rate</th>
+            <th style="width:65px">Quantity</th>
+            <th style="width:70px">Rate</th>
+            <th style="width:30px">per</th>
+            <th style="width:58px">Disc. %</th>
+            <th style="width:82px">Amount</th>
+          </tr>
+        </thead>
+        <tbody>${trows}</tbody>
+      </table>
+    </div>
 
     <div class="iwords">
       <strong>Amount Chargeable (in words)</strong> &nbsp; E. &amp; O.E<br>
@@ -405,7 +373,7 @@ function generate() {
               <td class="tc">9%</td><td>${f(totSGST)}</td>
               <td>${f(totCGST+totSGST)}</td>
             </tr>
-            <tr style="font-weight:bold">
+            <tr>
               <td>${f(totTax)}</td><td></td><td>${f(totCGST)}</td>
               <td></td><td>${f(totSGST)}</td><td>${f(totCGST+totSGST)}</td>
             </tr>
@@ -415,7 +383,7 @@ function generate() {
       <div class="itotsec">
         <div class="itotrow"><span>CGST</span><span>${f(totCGST)}</span></div>
         <div class="itotrow"><span>SGST</span><span>${f(totSGST)}</span></div>
-        ${Math.abs(roff)>=0.005 ? `<div class="itotrow"><span>Round Off</span><span>${roff>0?'+':''}${f(roff)}</span></div>` : ''}
+        ${Math.abs(roff)>=0.005?`<div class="itotrow"><span>Round Off</span><span>${roff>0?'+':''}${f(roff)}</span></div>`:''}
         <div class="itotrow itotfinal"><span>Total</span><span>₹${f(grandRnd)}</span></div>
       </div>
     </div>
@@ -431,7 +399,7 @@ function generate() {
       </div>
       <div class="isign">
         <div>for <strong>HOMEX DIGITAL SERVICES</strong></div>
-        <div>Authorised Signatory</div>
+        <div style="border-top:1px solid #777;padding-top:4px;margin-top:8px;">Authorised Signatory</div>
       </div>
     </div>
 
@@ -440,63 +408,33 @@ function generate() {
   document.getElementById('inv-wrap').style.display = 'block';
   document.getElementById('btnPdf').style.display = 'inline-block';
   document.getElementById('btnPrn').style.display = 'inline-block';
-  document.getElementById('inv-wrap').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('inv-wrap').scrollIntoView({behavior:'smooth'});
 }
 
-/* ===================== PDF DOWNLOAD ===================== */
 async function downloadPDF() {
   const btn = document.getElementById('btnPdf');
-  btn.textContent = '⏳ Generating...';
-  btn.disabled = true;
-
+  btn.textContent = '⏳ Generating...'; btn.disabled = true;
   const el = document.getElementById('inv');
-  const invNo = document.getElementById('invNo').value || 'invoice';
+  const invNo   = document.getElementById('invNo').value || 'invoice';
   const invDate = document.getElementById('invDate').value || '';
-  const fileName = `Homex_${invNo.replace(/\//g,'-')}${invDate ? '_'+invDate : ''}.pdf`;
-
+  const fileName = `Homex_${invNo.replace(/\//g,'-')}${invDate?'_'+invDate:''}.pdf`;
   try {
-    const canvas = await html2canvas(el, {
-      scale: 2,           // 2x for crisp quality
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      width: 794,
-      windowWidth: 794
-    });
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
-    const a4W = 210, a4H = 297;
-    const margin = 5;
-    const usableW = a4W - margin * 2;
-
-    const imgData = canvas.toDataURL('image/jpeg', 0.97);
-    const imgW = usableW;
-    const imgH = (canvas.height / canvas.width) * imgW;
-
-    // If taller than page, scale down
-    if (imgH <= a4H - margin * 2) {
-      pdf.addImage(imgData, 'JPEG', margin, margin, imgW, imgH);
-    } else {
-      // Scale to fit height
-      const scale = (a4H - margin * 2) / imgH;
-      pdf.addImage(imgData, 'JPEG', margin, margin, imgW * scale, (a4H - margin * 2));
-    }
-
+    const canvas = await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#ffffff',width:794,windowWidth:794});
+    const {jsPDF} = window.jspdf;
+    const pdf = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const margin=5, usableW=210-margin*2;
+    const imgData = canvas.toDataURL('image/jpeg',0.97);
+    const imgW = usableW, imgH = (canvas.height/canvas.width)*imgW;
+    if(imgH <= 297-margin*2){ pdf.addImage(imgData,'JPEG',margin,margin,imgW,imgH); }
+    else { const sc=(297-margin*2)/imgH; pdf.addImage(imgData,'JPEG',margin,margin,imgW*sc,297-margin*2); }
     pdf.save(fileName);
-  } catch(e) {
-    alert('PDF generate karne mein error aaya: ' + e.message);
-    console.error(e);
-  }
-
-  btn.textContent = '⬇ Download PDF';
-  btn.disabled = false;
+  } catch(e){ alert('PDF error: '+e.message); }
+  btn.textContent = '⬇ Download PDF'; btn.disabled = false;
 }
 
-/* ===================== INIT ===================== */
 window.onload = () => {
   document.getElementById('invDate').value = new Date().toISOString().split('T')[0];
-  addItem('YLDRPB-BL 8301', '8301', 2, 3999, 45);
+  addItem('YLDRPB-BL 8301','8301',2,3999,45);
 };
 </script>
 </body>
